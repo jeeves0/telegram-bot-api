@@ -6,25 +6,28 @@ mybot = api.bot(os.getenv("BOT_TOKEN", TOKEN))
 
 if not TOKEN: mybot.setWebhook("https://"+os.environ["HEROKU_APP_NAME"]+".herokuapp.com/"+os.environ["BOT_TOKEN"])
 
-def main():
+def main(static):
 
-	return 0
+	return static
 
-def inlineQuery():
+def inlineQuery(static):
 
-	return 0
+	return static
 
-def inlineKeyboard():
+def inlineKeyboard(static):
 
-	return 0
+	return static
 
 @app.route("/"+os.getenv("BOT_TOKEN", TOKEN), methods=['POST'])
 def bot_updates():
 
 	mybot.new = api.objectify(flask.request.get_json())
-	if "callback_query" in mybot.new._fields:inlineKeyboard()
-	elif "inline_query" in mybot.new._fields:inlineQuery()
-	else:main()
+	with open("data.json", "w") as static:
+		currStatic = api.objectify(json.load(static))
+		if "callback_query" in mybot.new._fields:newStatic = inlineKeyboard(currStatic)
+		elif "inline_query" in mybot.new._fields:newStatic = inlineQuery(currStatic)
+		else:newStatic = main(currStatic)
+		json.dump(newStatic._asdict(), static)
 	return "200"
 
 if __name__ == "__main__":

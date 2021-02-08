@@ -1,4 +1,5 @@
 import os, json, requests, collections
+from telethon import utils
 
 def objectify(obj): return json.loads(json.dumps(obj), object_hook=
     lambda d: collections.namedtuple('X', d.keys(), rename=True)(*d.values()))
@@ -25,36 +26,39 @@ class bot(object):
         raise self.APIError(res["error_code"], res["description"])
 
     def getUpdates(self):
-        x = bot.push(self, 'getUpdates', offset=self.offset, debug=False)
+        x = self.push(self, 'getUpdates', offset=self.offset, debug=False)
         if len(x):
             self.offset = x[0].update_id + 1
             self.new = x[0]
             return True
         return False
 
+    def getChatFromLink(self, link):
+        return utils.resolve_invite_link(link)[1]
+
     def setWebhook(self, url):
-        return bot.push(self, "setWebhook", url=url)
+        return self.push(self, "setWebhook", url=url)
 
     def deleteWebhook(self):
-        return bot.push(self, "setWebhook")
+        return self.push(self, "setWebhook")
 
     def sendMessage(self, text, chat_id=None, **kwargs):
-        return bot.push(self, "sendMessage", chat_id=chat_id if chat_id else self.new.message.chat.id, text=text, **kwargs)
+        return self.push(self, "sendMessage", chat_id=chat_id if chat_id else self.new.message.chat.id, text=text, **kwargs)
             
     def answerInlineQuery(self, results, query_id=None, **kwargs):
-        return bot.push(self, "answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.inline_query.id, **kwargs)
+        return self.push(self, "answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.inline_query.id, **kwargs)
 
     def answerCallbackQuery(self, query_id=None, **kwargs):
-        return bot.push(self, "answerCallbackQuery", callback_query_id=query_id if query_id else self.new.callback_query.id, **kwargs)
+        return self.push(self, "answerCallbackQuery", callback_query_id=query_id if query_id else self.new.callback_query.id, **kwargs)
 
     def getChatMember(self, chat_id, user_id):
-        return bot.push(self, "getChatMember", chat_id=chat_id, user_id=user_id)
+        return self.push(self, "getChatMember", chat_id=chat_id, user_id=user_id)
 
     def editMessageText(self, text, **kwargs):
-        return bot.push(self, "editMessageText", text=text, **kwargs)
+        return self.push(self, "editMessageText", text=text, **kwargs)
 
     def editMessageReplyMarkup(self, **kwargs):
-        return bot.push(self, "editMessageReplyMarkup", **kwargs)
+        return self.push(self, "editMessageReplyMarkup", **kwargs)
 
 class reply_markup(object):
     """docstring for keyboard"""
@@ -65,7 +69,7 @@ class reply_markup(object):
 
         def add(self, text, row=None, col=None, **kwargs):
             button = {"text": text, **kwargs}
-            if not row or row >= len(self.keyboard["inline_keyboard"]):self.keyboard["inline_keyboard"].append([button])
+            if row == None or row >= len(self.keyboard["inline_keyboard"]):self.keyboard["inline_keyboard"].append([button])
             elif not col or col >= len(self.keyboard["inline_keyboard"][row]):self.keyboard["inline_keyboard"][row].append(button)
             else:self.keyboard["inline_keyboard"][row].insert(col, button)
             return button
@@ -73,13 +77,13 @@ class reply_markup(object):
     class reply(object):
         """docstring for reply"""
         def __init__(self, **kwargs):
-            self.keyboard = {"reply_keyboard":[], **kwargs}
+            self.keyboard = {"keyboard":[], **kwargs}
 
         def add(self, text, row=None, col=None, **kwargs):
             button = {"text": text, **kwargs}
-            if not row or row >= len(self.keyboard["reply_keyboard"]):self.keyboard["reply_keyboard"].append([button])
-            elif not col or col >= len(self.keyboard["reply_keyboard"][row]):self.keyboard["reply_keyboard"][row].append(button)
-            else:self.keyboard["reply_keyboard"][row].insert(col, button)
+            if row == None or row >= len(self.keyboard["keyboard"]):self.keyboard["keyboard"].append([button])
+            elif not col or col >= len(self.keyboard["keyboard"][row]):self.keyboard["keyboard"][row].append(button)
+            else:self.keyboard["keyboard"][row].insert(col, button)
             return button
 
     class remove(object):

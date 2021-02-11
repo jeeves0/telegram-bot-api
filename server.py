@@ -22,12 +22,14 @@ def inlineKeyboard(static):
 def bot_updates():
 
 	mybot.new = api.objectify(flask.request.get_json())
-	with open("data.json", "w") as static:
-		currStatic = api.objectify(json.load(static))
-		if "callback_query" in mybot.new._fields:newStatic = inlineKeyboard(currStatic)
-		elif "inline_query" in mybot.new._fields:newStatic = inlineQuery(currStatic)
-		else:newStatic = main(currStatic)
-		json.dump(newStatic._asdict(), static)
+	with open("data.json", "w") as staticFile:
+		try:
+			static = json.load(staticFile)
+			if "callback_query" in mybot.new._fields:static = inlineKeyboard(static)
+			elif "inline_query" in mybot.new._fields:static = inlineQuery(static)
+			else:static = main(static)
+		except Exception as e:print(e)
+		json.dump(static, staticFile)
 	return "200"
 
 if __name__ == "__main__":

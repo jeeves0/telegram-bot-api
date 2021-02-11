@@ -67,10 +67,10 @@ class reply_markup(object):
         def __init__(self):
             self.keyboard = {"inline_keyboard": []}
 
-        def add(self, text, row=None, col=None, **kwargs):
+        def add(self, text, row=0, col=0, **kwargs):
             button = {"text": text, **kwargs}
-            if row == None or row >= len(self.keyboard["inline_keyboard"]):self.keyboard["inline_keyboard"].append([button])
-            elif not col or col >= len(self.keyboard["inline_keyboard"][row]):self.keyboard["inline_keyboard"][row].append(button)
+            if row >= len(self.keyboard["inline_keyboard"]):self.keyboard["inline_keyboard"].append([button])
+            elif col >= len(self.keyboard["inline_keyboard"][row]):self.keyboard["inline_keyboard"][row].append(button)
             else:self.keyboard["inline_keyboard"][row].insert(col, button)
             return button
 
@@ -79,11 +79,11 @@ class reply_markup(object):
         def __init__(self, **kwargs):
             self.keyboard = {"keyboard":[], **kwargs}
 
-        def add(self, text, row=None, col=None, **kwargs):
+        def add(self, text, row=0, col=0, **kwargs):
             button = {"text": text, **kwargs}
-            if row == None or row >= len(self.keyboard["keyboard"]):self.keyboard["keyboard"].append([button])
-            elif not col or col >= len(self.keyboard["keyboard"][row]):self.keyboard["keyboard"][row].append(button)
-            else:self.keyboard["keyboard"][row].insert(col, button)
+            if row >= len(self.keyboard["keyboard"]):self.keyboard["keyboard"].append([button]);print(1)
+            elif col >= len(self.keyboard["keyboard"][row]):self.keyboard["keyboard"][row].append(button);print(2)
+            else:self.keyboard["keyboard"][row].insert(col, button);print(3)
             return button
 
     class remove(object):

@@ -26,39 +26,42 @@ class bot(object):
         raise self.APIError(res["error_code"], res["description"])
 
     def getUpdates(self):
-        x = self.push(self, 'getUpdates', offset=self.offset, debug=False)
+        x = self.push('getUpdates', offset=self.offset, debug=False)
         if len(x):
             self.offset = x[0].update_id + 1
             self.new = x[0]
             return True
         return False
 
+    def getMe(self):
+        return self.push("getMe")
+
     def getChatFromLink(self, link):
         return utils.resolve_invite_link(link)[1]
 
     def setWebhook(self, url):
-        return self.push(self, "setWebhook", url=url)
+        return self.push("setWebhook", url=url)
 
     def deleteWebhook(self):
-        return self.push(self, "setWebhook")
+        return self.push("setWebhook")
 
     def sendMessage(self, text, chat_id=None, **kwargs):
-        return self.push(self, "sendMessage", chat_id=chat_id if chat_id else self.new.message.chat.id, text=text, **kwargs)
+        return self.push("sendMessage", chat_id=chat_id if chat_id else self.new.message.chat.id, text=text, **kwargs)
             
     def answerInlineQuery(self, results, query_id=None, **kwargs):
-        return self.push(self, "answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.inline_query.id, **kwargs)
+        return self.push("answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.inline_query.id, **kwargs)
 
     def answerCallbackQuery(self, query_id=None, **kwargs):
-        return self.push(self, "answerCallbackQuery", callback_query_id=query_id if query_id else self.new.callback_query.id, **kwargs)
+        return self.push("answerCallbackQuery", callback_query_id=query_id if query_id else self.new.callback_query.id, **kwargs)
 
     def getChatMember(self, chat_id, user_id):
-        return self.push(self, "getChatMember", chat_id=chat_id, user_id=user_id)
+        return self.push("getChatMember", chat_id=chat_id, user_id=user_id)
 
     def editMessageText(self, text, **kwargs):
-        return self.push(self, "editMessageText", text=text, **kwargs)
+        return self.push("editMessageText", text=text, **kwargs)
 
     def editMessageReplyMarkup(self, **kwargs):
-        return self.push(self, "editMessageReplyMarkup", **kwargs)
+        return self.push("editMessageReplyMarkup", **kwargs)
 
 class reply_markup(object):
     """docstring for keyboard"""
@@ -79,11 +82,11 @@ class reply_markup(object):
         def __init__(self, **kwargs):
             self.keyboard = {"keyboard":[], **kwargs}
 
-        def add(self, text, row=0, col=0, **kwargs):
+        def add(self, text, row=0, col=69420, **kwargs):
             button = {"text": text, **kwargs}
-            if row >= len(self.keyboard["keyboard"]):self.keyboard["keyboard"].append([button]);print(1)
-            elif col >= len(self.keyboard["keyboard"][row]):self.keyboard["keyboard"][row].append(button);print(2)
-            else:self.keyboard["keyboard"][row].insert(col, button);print(3)
+            if row >= len(self.keyboard["keyboard"]):self.keyboard["keyboard"].append([button])
+            elif col >= len(self.keyboard["keyboard"][row]):self.keyboard["keyboard"][row].append(button)
+            else:self.keyboard["keyboard"][row].insert(col, button)
             return button
 
     class remove(object):

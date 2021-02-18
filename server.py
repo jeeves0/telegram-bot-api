@@ -24,9 +24,11 @@ def bot_updates():
 
 	mybot.new = api.objectify(flask.request.get_json())
 	#print(mybot.new)
-	with open("data.json", "r") as static:
-		try:currStatic = json.load(static)
-		except json.decoder.JSONDecodeError:currStatic = {}
+	try:
+		with open("data.json", "r") as static:
+			currStatic = json.load(static)
+	except json.decoder.JSONDecodeError, FileNotFoundError:
+		currStatic = {} #Default JSON to use if JSON file not found, corrupted or had invalid syntax
 
 	if "callback_query" in mybot.new._fields:newStatic = inlineKeyboard(currStatic)
 	elif "inline_query" in mybot.new._fields:newStatic = inlineQuery(currStatic)

@@ -39,6 +39,9 @@ class bot(object):
     def getChatFromLink(self, link):
         return utils.resolve_invite_link(link)[1]
 
+    def getChat(self, chat_id):
+        return self.push("getChat", chat_id=chat_id)
+
     def setWebhook(self, url):
         return self.push("setWebhook", url=url)
 
@@ -46,13 +49,13 @@ class bot(object):
         return self.push("setWebhook")
 
     def sendMessage(self, text, chat_id=None, **kwargs):
-        return self.push("sendMessage", chat_id=chat_id if chat_id else self.new.message.chat.id, text=text, **kwargs)
+        return self.push("sendMessage", chat_id=chat_id if chat_id else self.new.chat.id, text=text, **kwargs)
             
     def answerInlineQuery(self, results, query_id=None, **kwargs):
-        return self.push("answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.inline_query.id, **kwargs)
+        return self.push("answerInlineQuery", results=results, inline_query_id=query_id if query_id else self.new.id, **kwargs)
 
     def answerCallbackQuery(self, query_id=None, **kwargs):
-        return self.push("answerCallbackQuery", callback_query_id=query_id if query_id else self.new.callback_query.id, **kwargs)
+        return self.push("answerCallbackQuery", callback_query_id=query_id if query_id else self.new.id, **kwargs)
 
     def getChatMember(self, chat_id, user_id):
         return self.push("getChatMember", chat_id=chat_id, user_id=user_id)
@@ -62,6 +65,15 @@ class bot(object):
 
     def editMessageReplyMarkup(self, **kwargs):
         return self.push("editMessageReplyMarkup", **kwargs)
+
+    def copyMessage(self, message_id, from_chat_id, chat_id=None, **kwargs):
+        return self.push("copyMessage", message_id=message_id, from_chat_id=from_chat_id, chat_id=chat_id if chat_id else self.new.chat.id, **kwargs)
+
+    def forwardMessage(self, message_id, from_chat_id, chat_id=None, **kwargs):
+        return self.push("forwardMessage", message_id=message_id, from_chat_id=from_chat_id, chat_id=chat_id if chat_id else self.new.chat.id, **kwargs)
+
+    def deleteMessage(self, message_id, chat_id=None):
+        return self.push("deleteMessage", message_id=message_id, chat_id=chat_id if chat_id else self.new.chat.id)
 
 class reply_markup(object):
     """docstring for keyboard"""

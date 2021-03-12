@@ -17,7 +17,7 @@ def onSIG(signum, frame):
 signal.signal(signal.SIGINT, onSIG)
 signal.signal(signal.SIGTERM, onSIG)
 
-if os.getenv("PORT", None): mybot.setWebhook("https://"+os.environ["HEROKU_APP_NAME"]+".herokuapp.com/"+os.environ["BOT_TOKEN"])
+if os.getenv("BOT_TOKEN", None): mybot.setWebhook("https://"+os.environ["HEROKU_APP_NAME"]+".herokuapp.com/"+os.environ["BOT_TOKEN"])
 else: mybot.deleteWebhook()
 
 def main(static):
@@ -36,7 +36,8 @@ def inlineKeyboard(static):
 def bot_updates():
 
 	global static
-	mybot.new = api.objectify(flask.request.get_json())
+	if os.getenv("BOT_TOKEN", None):
+		mybot.new = api.objectify(flask.request.get_json())
 
 	try:
 		if "callback_query" in mybot.new._fields:
@@ -52,9 +53,19 @@ def bot_updates():
 			static = main(static)
 
 	except Exception as e:
-		print(e)
+		print(f"Line {e.__traceback__.tb_lineno}: {e}")
 
 	return "200"
 
 if __name__ == "__main__":
-	app.run(host="0.0.0.0", port=os.getenv("PORT", 8080))
+	if os.getenv("BOT_TOKEN", None):
+		app.run(host="0.0.0.0", port=os.getenv("PORT", 8080))
+	else:
+		print("Long polling started...")
+		while True:
+			if mybot.getUpdates():
+				updateTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+				tmp = time.time()
+				bot_updates()
+				print(f"[{updateTime}]: {time.time() - tmp}")
+			else:time.sleep(3)

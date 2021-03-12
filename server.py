@@ -1,4 +1,5 @@
 import telegramBotAPI as api, time, flask, os, sys, requests, signal, json
+from box import Box
 
 TOKEN = None # Telegran Bot Token
 jsonBinId = None # JSONBin Bin Id 
@@ -6,7 +7,7 @@ jsonMasterKey = None # JSONBin API Key
 
 app = flask.Flask(__name__)
 mybot = api.bot(os.getenv("BOT_TOKEN", TOKEN))
-static = requests.get("https://api.jsonbin.io/v3/b/"+jsonBinId+"/latest", headers={"X-MASTER-KEY": jsonMasterKey}).json()["record"]
+static = Box(requests.get("https://api.jsonbin.io/v3/b/"+jsonBinId+"/latest", headers={"X-MASTER-KEY": jsonMasterKey}).json()["record"])
 
 def onSIG(signum, frame):
 	

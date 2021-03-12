@@ -40,6 +40,9 @@ class bot(object):
     def getChat(self, chat_id):
         return self.push("getChat", chat_id=chat_id)
 
+    def getChatMember(self, chat_id=None, user_id=None):
+        return self.push("getChat", chat_id=chat_id if chat_id else self.new.chat.id, user_id=user_id if user_id else self.new.xfrom.id)
+
     def setWebhook(self, url):
         return self.push("setWebhook", url=url)
 
@@ -55,8 +58,8 @@ class bot(object):
     def answerCallbackQuery(self, query_id=None, **kwargs):
         return self.push("answerCallbackQuery", callback_query_id=query_id if query_id else self.new.id, **kwargs)
 
-    def getChatMember(self, chat_id, user_id):
-        return self.push("getChatMember", chat_id=chat_id, user_id=user_id)
+    def getChatMember(self, chat_id=None, user_id=None):
+        return self.push("getChatMember", chat_id=chat_id if chat_id else self.new.chat.id, user_id=user_id if user_id else self.new.xfrom.id)
 
     def editMessageText(self, text, **kwargs):
         return self.push("editMessageText", text=text, **kwargs)
@@ -70,8 +73,14 @@ class bot(object):
     def forwardMessage(self, message_id, from_chat_id, chat_id=None, **kwargs):
         return self.push("forwardMessage", message_id=message_id, from_chat_id=from_chat_id, chat_id=chat_id if chat_id else self.new.chat.id, **kwargs)
 
-    def deleteMessage(self, message_id, chat_id=None):
-        return self.push("deleteMessage", message_id=message_id, chat_id=chat_id if chat_id else self.new.chat.id)
+    def deleteMessage(self, message_id=None, chat_id=None):
+        return self.push("deleteMessage", message_id=message_id if message_id else self.new.message_id, chat_id=chat_id if chat_id else self.new.chat.id)
+
+    def editMessageReplyMarkup(self, **kwargs):
+        return self.push("editMessageReplyMarkup", **kwargs)
+
+    def pinChatMessage(self, chat_id=None, message_id=None, **kwargs):
+        return self.push("pinChatMessage", chat_id=chat_id if chat_id else self.new.chat.id, message_id=message_id if message_id else self.new.message_id, **kwargs)
 
 class reply_markup(object):
     """docstring for keyboard"""
@@ -80,7 +89,7 @@ class reply_markup(object):
         def __init__(self):
             self.keyboard = {"inline_keyboard": []}
 
-        def add(self, text, row=0, col=0, **kwargs):
+        def add(self, text, row=0, col=69420, **kwargs):
             button = {"text": text, **kwargs}
             if row >= len(self.keyboard["inline_keyboard"]):self.keyboard["inline_keyboard"].append([button])
             elif col >= len(self.keyboard["inline_keyboard"][row]):self.keyboard["inline_keyboard"][row].append(button)

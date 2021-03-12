@@ -1,8 +1,6 @@
-import os, json, requests, collections
+import os, json, requests
 from telethon import utils
-
-def objectify(obj): return json.loads(json.dumps(obj), object_hook=
-    lambda d: collections.namedtuple('X', d.keys(), rename=True)(*d.values()))
+from box import Box
 
 class bot(object):
     """a class for interacting with the telegram bot"""
@@ -20,10 +18,10 @@ class bot(object):
     
     def push(self, cmd, headers={}, debug=False, **kwargs):
         params = {key : val for key, val in kwargs.items()}
-        res = requests.post("https://api.telegram.org/bot"+self.token+"/"+cmd, headers=headers, json=params).json()
+        res = Box(requests.post("https://api.telegram.org/bot"+self.token+"/"+cmd, headers=headers, json=params).json())
         if debug:print("Command: %s\nParameters: %s\nResponse: %s" %(cmd, params, res))
-        if res["ok"]: return objectify(res).result
-        raise self.APIError(res["error_code"], res["description"])
+        if res.ok: return res.result
+        raise self.APIError(res.error_code, res.description)
 
     def getUpdates(self):
         x = self.push('getUpdates', offset=self.offset, debug=False)
